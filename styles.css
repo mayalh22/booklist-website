@@ -1,79 +1,98 @@
+/* General resets */
 body {
-  font-family: 'Roboto', sans-serif;
-  background: #f7f6f2;
+  font-family: 'Georgia', serif;
+  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
   color: #333;
   margin: 0;
-  padding: 0;
-}
-
-header {
-  background: #fff;
-  text-align: center;
-  padding: 3rem 1rem 2rem;
-  box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+  padding: 2rem;
 }
 
 h1 {
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  margin-bottom: 0.5rem;
-  color: #3e3e3e;
+  font-family: 'Palatino Linotype', 'Book Antiqua', Palatino, serif;
+  font-weight: 700;
+  font-size: 3rem;
+  text-align: center;
+  color: #2c3e50;
+  margin-bottom: 2rem;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
-.tagline {
-  font-size: 1.1rem;
-  color: #7a7a7a;
-}
-
+/* Book grid container */
 .book-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 2rem;
-  padding: 2rem;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2.5rem;
   max-width: 1200px;
-  margin: auto;
+  margin: 0 auto;
+  padding: 0 1rem;
 }
 
+/* Each book card */
 .book-card {
-  background: #fff;
-  border-radius: 12px;
-  box-shadow: 0 10px 20px rgba(0,0,0,0.05);
-  padding: 1rem;
-  text-align: center;
-  transition: transform 0.3s ease;
+  background: white;
+  border-radius: 15px;
+  box-shadow:
+    0 8px 15px rgba(44, 62, 80, 0.1),
+    0 2px 8px rgba(44, 62, 80, 0.06);
+  padding: 1.8rem 1.5rem 2.2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  cursor: default;
 }
 
 .book-card:hover {
-  transform: translateY(-5px);
+  transform: translateY(-8px);
+  box-shadow:
+    0 15px 25px rgba(44, 62, 80, 0.2),
+    0 5px 15px rgba(44, 62, 80, 0.1);
 }
 
+/* Book cover images */
 .book-card img {
   width: 100%;
-  border-radius: 8px;
-  max-height: 300px;
+  height: 420px;
   object-fit: cover;
+  border-radius: 12px;
+  margin-bottom: 1.3rem;
+  box-shadow: 0 6px 10px rgba(0,0,0,0.08);
+  transition: box-shadow 0.3s ease;
 }
 
-h2 {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.2rem;
-  margin: 0.8rem 0 0.4rem;
+.book-card:hover img {
+  box-shadow: 0 15px 30px rgba(0,0,0,0.15);
 }
 
-.author {
+/* Book title */
+.book-card h2 {
+  font-family: 'Merriweather', serif;
+  font-size: 1.8rem;
+  margin: 0 0 0.25rem 0;
+  color: #34495e;
+  line-height: 1.2;
+}
+
+/* Author */
+.book-card .author {
   font-style: italic;
-  color: #777;
-  margin-bottom: 0.5rem;
+  color: #7f8c8d;
+  margin: 0 0 1rem 0;
+  font-size: 1rem;
+  letter-spacing: 0.05em;
 }
 
-.note {
+/* Note/description */
+.book-card .note {
   font-size: 0.95rem;
-  color: #444;
+  line-height: 1.55;
+  color: #555;
+  flex-grow: 1;
+  user-select: text;
 }
 
-footer {
-  text-align: center;
-  padding: 2rem 1rem;
-  font-size: 0.9rem;
-  color: #888;
+/* Responsive tweaks */
+@media (max-width: 480px) {
+  .book-card img {
+    height: 300px;
+  }
 }
