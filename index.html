@@ -3,52 +3,53 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>My Interactive Booklist</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet" />
+  <title>Premium Booklist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
-    /* Reset & base */
     * {
       box-sizing: border-box;
+      margin: 0;
+      padding: 0;
     }
     
     :root {
       --primary: #6366f1;
-      --primary-dark: #4338ca;
-      --secondary: #8b5cf6;
+      --primary-light: #8b5cf6;
       --accent: #f59e0b;
-      --bg-light: #fafafa;
-      --bg-dark: #0f0f23;
-      --card-light: #ffffff;
-      --card-dark: #1a1a2e;
-      --text-light: #1f2937;
-      --text-muted-light: #6b7280;
-      --text-dark: #f9fafb;
-      --text-muted-dark: #d1d5db;
-      --shadow-light: rgba(0, 0, 0, 0.1);
-      --shadow-dark: rgba(0, 0, 0, 0.3);
-      --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
-      --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+      --accent-light: #fbbf24;
+      --text-dark: #0f172a;
+      --text-light: #64748b;
+      --text-muted: #94a3b8;
+      --bg-white: #ffffff;
+      --bg-gray: #f8fafc;
+      --border: #e2e8f0;
+      --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+      --shadow-lg: 0 35px 60px -12px rgba(0, 0, 0, 0.35);
+      --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      --gradient-accent: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+      --gradient-hero: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+      --blur: blur(20px);
     }
     
     body {
-      margin: 0;
-      font-family: 'Inter', sans-serif;
-      background: var(--bg-light);
-      color: var(--text-light);
-      transition: all 0.4s ease;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-white);
+      color: var(--text-dark);
       line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
     }
     
     body.dark {
-      background: var(--bg-dark);
-      color: var(--text-dark);
+      --text-dark: #f1f5f9;
+      --text-light: #cbd5e1;
+      --text-muted: #94a3b8;
+      --bg-white: #0f172a;
+      --bg-gray: #1e293b;
+      --border: #334155;
     }
     
-    /* Animated background particles */
+    /* Animated background */
     body::before {
       content: '';
       position: fixed;
@@ -57,201 +58,226 @@
       width: 100%;
       height: 100%;
       background: 
-        radial-gradient(circle at 20% 50%, rgba(120, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.3) 0%, transparent 50%),
-        radial-gradient(circle at 40% 80%, rgba(120, 219, 255, 0.3) 0%, transparent 50%);
+        radial-gradient(600px circle at 0% 0%, rgba(120, 119, 198, 0.15) 0%, transparent 50%),
+        radial-gradient(600px circle at 100% 0%, rgba(120, 219, 255, 0.15) 0%, transparent 50%),
+        radial-gradient(600px circle at 100% 100%, rgba(255, 119, 198, 0.15) 0%, transparent 50%),
+        radial-gradient(600px circle at 0% 100%, rgba(255, 219, 119, 0.15) 0%, transparent 50%);
       z-index: -1;
-      opacity: 0.4;
-      animation: float 20s ease-in-out infinite;
+      animation: float 30s ease-in-out infinite;
+      opacity: 0.6;
     }
     
     body.dark::before {
-      opacity: 0.2;
+      opacity: 0.3;
     }
     
     @keyframes float {
-      0%, 100% { transform: translateY(0px) rotate(0deg); }
-      33% { transform: translateY(-20px) rotate(1deg); }
-      66% { transform: translateY(10px) rotate(-1deg); }
+      0%, 100% { transform: scale(1) rotate(0deg); }
+      25% { transform: scale(1.1) rotate(90deg); }
+      50% { transform: scale(0.9) rotate(180deg); }
+      75% { transform: scale(1.05) rotate(270deg); }
     }
     
-    header {
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      color: white;
-      padding: 2rem 1rem;
+    /* Hero Section */
+    .hero {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
       text-align: center;
       position: relative;
+      background: var(--gradient-hero);
       overflow: hidden;
-      box-shadow: 0 8px 32px var(--shadow-light);
-      backdrop-filter: blur(10px);
     }
     
-    body.dark header {
-      box-shadow: 0 8px 32px var(--shadow-dark);
-    }
-    
-    header::before {
+    .hero::before {
       content: '';
       position: absolute;
       top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      animation: shine 3s infinite;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: url('data:image/svg+xml,<svg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"><g fill="none" fill-rule="evenodd"><g fill="rgba(255,255,255,0.1)" fill-opacity="0.1"><circle cx="30" cy="30" r="1"/></g></svg>');
+      animation: drift 20s linear infinite;
     }
     
-    @keyframes shine {
-      0% { left: -100%; }
-      100% { left: 100%; }
+    @keyframes drift {
+      from { transform: translateX(0); }
+      to { transform: translateX(60px); }
     }
     
-    header h1 {
+    .hero-content {
+      max-width: 900px;
+      padding: 0 2rem;
+      z-index: 2;
+    }
+    
+    .hero h1 {
       font-family: 'Playfair Display', serif;
-      font-size: 3rem;
-      font-weight: 700;
-      margin: 0;
-      background: linear-gradient(45deg, #fff, #e0e7ff);
-      background-clip: text;
+      font-size: clamp(3rem, 8vw, 6rem);
+      font-weight: 800;
+      color: white;
+      margin-bottom: 1.5rem;
+      line-height: 1.1;
+      background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 50%, #c7d2fe 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.1);
-      animation: titleGlow 2s ease-in-out infinite alternate;
+      background-clip: text;
+      animation: glow 3s ease-in-out infinite alternate;
     }
     
-    @keyframes titleGlow {
-      from { filter: drop-shadow(0 0 5px rgba(255,255,255,0.5)); }
-      to { filter: drop-shadow(0 0 15px rgba(255,255,255,0.8)); }
+    @keyframes glow {
+      from { filter: drop-shadow(0 0 20px rgba(255,255,255,0.5)); }
+      to { filter: drop-shadow(0 0 40px rgba(255,255,255,0.8)); }
     }
     
-    header .tagline {
-      font-style: italic;
-      margin: 0.5rem 0 2rem;
-      font-family: 'Playfair Display', serif;
-      font-size: 1.2rem;
-      opacity: 0.9;
-      animation: fadeInUp 1s ease 0.5s both;
+    .hero p {
+      font-size: 1.5rem;
+      color: rgba(255,255,255,0.9);
+      margin-bottom: 3rem;
+      font-weight: 300;
+      letter-spacing: 0.5px;
     }
     
-    @keyframes fadeInUp {
-      from {
-        opacity: 0;
-        transform: translateY(20px);
-      }
-      to {
-        opacity: 0.9;
-        transform: translateY(0);
-      }
-    }
-    
-    .controls {
+    .hero-controls {
       display: flex;
-      justify-content: center;
-      gap: 1.5rem;
+      gap: 2rem;
       flex-wrap: wrap;
-      margin-top: 1rem;
-      animation: fadeInUp 1s ease 0.7s both;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 4rem;
     }
     
     .search-container {
       position: relative;
+      display: flex;
+      align-items: center;
     }
     
-    .controls input[type="search"] {
-      padding: 0.75rem 1.5rem;
-      font-size: 1rem;
-      border-radius: 50px;
-      border: 2px solid rgba(255,255,255,0.3);
-      width: 300px;
+    .search-input {
+      width: 400px;
       max-width: 90vw;
-      outline: none;
+      padding: 1rem 1.5rem 1rem 3.5rem;
+      font-size: 1.1rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 60px;
       background: rgba(255,255,255,0.1);
+      backdrop-filter: var(--blur);
       color: white;
-      backdrop-filter: blur(10px);
+      outline: none;
       transition: all 0.3s ease;
-      font-family: 'Inter', sans-serif;
     }
     
-    .controls input[type="search"]::placeholder {
-      color: rgba(255,255,255,0.7);
+    .search-input::placeholder {
+      color: rgba(255,255,255,0.6);
     }
     
-    .controls input[type="search"]:focus {
-      border-color: rgba(255,255,255,0.6);
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
+    .search-input:focus {
+      border-color: rgba(255,255,255,0.4);
+      box-shadow: 0 0 0 4px rgba(255,255,255,0.1);
       transform: translateY(-2px);
     }
     
-    .controls button {
-      cursor: pointer;
-      border: 2px solid rgba(255,255,255,0.3);
-      background: rgba(255,255,255,0.1);
-      color: white;
-      padding: 0.75rem 1.5rem;
-      border-radius: 50px;
-      font-weight: 600;
-      font-family: 'Inter', sans-serif;
-      backdrop-filter: blur(10px);
-      transition: all 0.3s ease;
-      position: relative;
-      overflow: hidden;
-    }
-    
-    .controls button:hover,
-    .controls button:focus {
-      border-color: rgba(255,255,255,0.6);
-      box-shadow: 0 0 20px rgba(255,255,255,0.3);
-      transform: translateY(-2px);
-      outline: none;
-    }
-    
-    .controls button::before {
-      content: '';
+    .search-icon {
       position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
-      transition: left 0.5s;
+      left: 1.2rem;
+      color: rgba(255,255,255,0.6);
+      font-size: 1.2rem;
+      pointer-events: none;
     }
     
-    .controls button:hover::before {
-      left: 100%;
+    .theme-toggle {
+      padding: 1rem 2rem;
+      border: 2px solid rgba(255,255,255,0.2);
+      border-radius: 60px;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: var(--blur);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      outline: none;
     }
-
-    main.book-grid {
-      flex-grow: 1;
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 2rem;
-      padding: 3rem 2rem;
+    
+    .theme-toggle:hover,
+    .theme-toggle:focus {
+      border-color: rgba(255,255,255,0.4);
+      transform: translateY(-2px);
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    
+    .scroll-indicator {
+      position: absolute;
+      bottom: 3rem;
+      left: 50%;
+      transform: translateX(-50%);
+      color: rgba(255,255,255,0.8);
+      animation: bounce 2s infinite;
+    }
+    
+    @keyframes bounce {
+      0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
+      40% { transform: translateX(-50%) translateY(-10px); }
+      60% { transform: translateX(-50%) translateY(-5px); }
+    }
+    
+    /* Books Section */
+    .books-section {
+      padding: 8rem 0;
+      background: var(--bg-gray);
+      position: relative;
+    }
+    
+    .container {
       max-width: 1400px;
-      margin: auto;
-      width: 100%;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: 6rem;
+    }
+    
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 1rem;
+    }
+    
+    .section-subtitle {
+      font-size: 1.2rem;
+      color: var(--text-light);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    /* Book Grid */
+    .book-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 3rem;
+      margin-bottom: 4rem;
     }
     
     .book-card {
-      background: var(--card-light);
-      border-radius: 20px;
-      box-shadow: 0 10px 30px var(--shadow-light);
-      padding: 1.5rem;
+      background: var(--bg-white);
+      border-radius: 24px;
+      padding: 2rem;
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
       cursor: pointer;
       position: relative;
+      overflow: hidden;
       display: flex;
       flex-direction: column;
       align-items: center;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      user-select: none;
-      overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.2);
-      backdrop-filter: blur(10px);
-    }
-    
-    body.dark .book-card {
-      background: var(--card-dark);
-      box-shadow: 0 10px 30px var(--shadow-dark);
-      border-color: rgba(255,255,255,0.1);
+      text-align: center;
     }
     
     .book-card::before {
@@ -260,723 +286,439 @@
       top: 0;
       left: 0;
       right: 0;
-      height: 4px;
-      background: var(--gradient-1);
-      transform: scaleX(0);
-      transition: transform 0.3s ease;
+      height: 6px;
+      background: var(--gradient-primary);
+      opacity: 0;
+      transition: opacity 0.3s ease;
     }
     
     .book-card:nth-child(3n+2)::before {
-      background: var(--gradient-2);
+      background: var(--gradient-accent);
     }
     
     .book-card:nth-child(3n+3)::before {
-      background: var(--gradient-3);
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
     }
     
-    .book-card:hover::before,
-    .book-card:focus::before {
-      transform: scaleX(1);
+    .book-card:hover::before {
+      opacity: 1;
     }
     
-    .book-card:hover,
-    .book-card:focus {
-      transform: translateY(-10px) scale(1.02);
-      box-shadow: 0 20px 50px var(--shadow-light);
-      outline: none;
+    .book-card:hover {
+      transform: translateY(-12px) scale(1.02);
+      box-shadow: var(--shadow-lg);
     }
     
-    body.dark .book-card:hover,
-    body.dark .book-card:focus {
-      box-shadow: 0 20px 50px var(--shadow-dark);
-    }
-    
-    .book-cover-container {
-      position: relative;
-      margin-bottom: 1.5rem;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    }
-    
-    .book-card img {
-      width: 180px;
-      height: 270px;
+    .book-cover {
+      width: 200px;
+      height: 300px;
+      border-radius: 16px;
       object-fit: cover;
-      border-radius: 12px;
+      margin-bottom: 2rem;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
       transition: transform 0.3s ease;
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: white;
-      font-size: 1rem;
-      text-align: center;
     }
     
-    .book-card:hover img {
-      transform: scale(1.05);
+    .book-card:hover .book-cover {
+      transform: scale(1.05) rotateY(5deg);
     }
     
-    .book-card h2 {
+    .book-title {
       font-family: 'Playfair Display', serif;
-      margin: 0 0 0.5rem;
-      font-size: 1.3rem;
+      font-size: 1.5rem;
       font-weight: 700;
-      text-align: center;
-      user-select: text;
-      line-height: 1.3;
-      color: var(--text-light);
-    }
-    
-    body.dark .book-card h2 {
       color: var(--text-dark);
+      margin-bottom: 0.5rem;
+      line-height: 1.3;
     }
     
-    .book-card .author {
-      font-style: italic;
-      color: var(--text-muted-light);
-      margin-bottom: 1rem;
-      user-select: text;
+    .book-author {
+      font-size: 1rem;
+      color: var(--text-light);
+      margin-bottom: 1.5rem;
       font-weight: 500;
-      font-size: 0.95rem;
     }
     
-    body.dark .book-card .author {
-      color: var(--text-muted-dark);
-    }
-    
-    .fav-btn {
+    .favorite-btn {
       position: absolute;
-      top: 12px;
-      right: 12px;
-      background: rgba(255,255,255,0.9);
-      font-size: 1.4rem;
-      color: var(--accent);
-      border: none;
-      width: 40px;
-      height: 40px;
+      top: 1.5rem;
+      right: 1.5rem;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
+      border: none;
+      background: rgba(255,255,255,0.9);
+      backdrop-filter: var(--blur);
+      color: var(--accent);
+      font-size: 1.5rem;
+      cursor: pointer;
       display: flex;
       align-items: center;
       justify-content: center;
-      user-select: none;
-      cursor: pointer;
       transition: all 0.3s ease;
-      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-      backdrop-filter: blur(10px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
     }
     
-    body.dark .fav-btn {
-      background: rgba(0,0,0,0.7);
-    }
-    
-    .fav-btn:hover,
-    .fav-btn:focus {
+    .favorite-btn:hover {
       transform: scale(1.1);
-      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.3);
-      outline: none;
+      box-shadow: 0 8px 30px rgba(245, 158, 11, 0.3);
     }
     
-    .fav {
-      background: linear-gradient(135deg, rgba(245, 158, 11, 0.1) 0%, rgba(245, 158, 11, 0.05) 100%);
-      border: 2px solid rgba(245, 158, 11, 0.3);
+    .book-card.favorite {
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.05) 0%, rgba(245, 158, 11, 0.02) 100%);
+      border-color: rgba(245, 158, 11, 0.2);
     }
-
+    
+    /* Modal */
     .modal {
       position: fixed;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
       background: rgba(0,0,0,0.8);
+      backdrop-filter: var(--blur);
       display: flex;
-      justify-content: center;
       align-items: center;
-      animation: fadeIn 0.4s ease forwards;
-      z-index: 100;
+      justify-content: center;
+      z-index: 1000;
       padding: 2rem;
-      backdrop-filter: blur(10px);
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .modal.active {
+      opacity: 1;
+      visibility: visible;
     }
     
     .modal-content {
-      background: var(--card-light);
-      border-radius: 24px;
+      background: var(--bg-white);
+      border-radius: 32px;
       padding: 3rem;
+      max-width: 900px;
       width: 100%;
-      max-width: 800px;
       max-height: 90vh;
       overflow-y: auto;
       position: relative;
-      color: var(--text-light);
-      box-shadow: 0 25px 50px var(--shadow-dark);
-      border: 1px solid rgba(255,255,255,0.2);
-      backdrop-filter: blur(20px);
-      animation: slideUp 0.4s ease forwards;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--border);
+      transform: scale(0.9) translateY(30px);
+      transition: transform 0.3s ease;
     }
     
-    @keyframes slideUp {
-      from {
-        transform: translateY(50px);
-        opacity: 0;
-      }
-      to {
-        transform: translateY(0);
-        opacity: 1;
-      }
+    .modal.active .modal-content {
+      transform: scale(1) translateY(0);
     }
     
-    body.dark .modal-content {
-      background: var(--card-dark);
-      color: var(--text-dark);
-      border-color: rgba(255,255,255,0.1);
+    .modal-header {
+      display: flex;
+      gap: 2rem;
+      margin-bottom: 2rem;
+      align-items: flex-start;
     }
     
     .modal-cover {
       width: 200px;
       height: 300px;
-      object-fit: cover;
-      float: left;
-      margin-right: 2rem;
       border-radius: 16px;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      object-fit: cover;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+      flex-shrink: 0;
     }
     
-    .modal-content h2 {
+    .modal-info {
+      flex: 1;
+    }
+    
+    .modal-title {
       font-family: 'Playfair Display', serif;
-      margin-top: 0;
-      margin-bottom: 0.5rem;
-      font-size: 2.2rem;
+      font-size: 2.5rem;
       font-weight: 700;
+      color: var(--text-dark);
+      margin-bottom: 0.5rem;
       line-height: 1.2;
     }
     
-    .modal-content h3 {
-      margin-top: 0;
-      font-weight: 500;
-      font-style: italic;
-      color: var(--text-muted-light);
-      margin-bottom: 1.5rem;
-      font-size: 1.1rem;
-    }
-    
-    body.dark .modal-content h3 {
-      color: var(--text-muted-dark);
-    }
-    
-    .modal-content p {
-      line-height: 1.7;
-      user-select: text;
-      font-size: 1.05rem;
+    .modal-author {
+      font-size: 1.3rem;
+      color: var(--text-light);
       margin-bottom: 2rem;
+      font-weight: 500;
+    }
+    
+    .modal-description {
+      font-size: 1.1rem;
+      line-height: 1.8;
+      color: var(--text-dark);
+      margin-bottom: 2rem;
+    }
+    
+    .modal-favorite-btn {
+      padding: 1rem 2rem;
+      border: none;
+      border-radius: 60px;
+      background: var(--gradient-primary);
+      color: white;
+      font-size: 1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .modal-favorite-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
     }
     
     .close-btn {
       position: absolute;
-      top: 20px;
-      right: 25px;
-      background: rgba(255,255,255,0.1);
-      border: 1px solid rgba(255,255,255,0.2);
-      width: 45px;
-      height: 45px;
+      top: 2rem;
+      right: 2rem;
+      width: 50px;
+      height: 50px;
       border-radius: 50%;
+      border: none;
+      background: rgba(15, 23, 42, 0.1);
+      color: var(--text-dark);
       font-size: 1.5rem;
       cursor: pointer;
-      color: var(--text-muted-light);
-      font-weight: 400;
-      user-select: none;
-      transition: all 0.3s ease;
-      backdrop-filter: blur(10px);
       display: flex;
       align-items: center;
       justify-content: center;
+      transition: all 0.3s ease;
     }
     
-    body.dark .close-btn {
-      background: rgba(0,0,0,0.3);
-      border-color: rgba(255,255,255,0.1);
-      color: var(--text-muted-dark);
-    }
-    
-    .close-btn:hover,
-    .close-btn:focus {
+    .close-btn:hover {
       background: rgba(239, 68, 68, 0.1);
-      border-color: rgba(239, 68, 68, 0.3);
       color: #ef4444;
       transform: scale(1.1);
-      outline: none;
     }
     
-    .fav-btn.large {
-      font-size: 1rem;
-      margin-top: 2rem;
-      background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
-      padding: 1rem 2rem;
-      border-radius: 50px;
-      color: white;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.5rem;
-      user-select: none;
-      cursor: pointer;
-      border: none;
-      transition: all 0.3s ease;
-      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-family: 'Inter', sans-serif;
-    }
-    
-    .fav-btn.large:hover,
-    .fav-btn.large:focus {
-      transform: translateY(-2px);
-      box-shadow: 0 12px 35px rgba(99, 102, 241, 0.4);
-      outline: none;
-    }
-
-    @keyframes fadeIn {
-      from {opacity: 0;}
-      to {opacity: 1;}
-    }
-
-    footer {
-      padding: 2rem 1rem;
+    /* Empty State */
+    .empty-state {
       text-align: center;
-      color: var(--text-muted-light);
-      font-size: 0.9rem;
-      user-select: none;
-      background: rgba(255,255,255,0.5);
-      backdrop-filter: blur(10px);
-      border-top: 1px solid rgba(255,255,255,0.2);
+      padding: 6rem 2rem;
+      color: var(--text-light);
     }
     
-    body.dark footer {
-      color: var(--text-muted-dark);
-      background: rgba(0,0,0,0.3);
-      border-top-color: rgba(255,255,255,0.1);
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 2rem;
+      opacity: 0.5;
     }
-
+    
+    .empty-state h3 {
+      font-size: 1.5rem;
+      margin-bottom: 1rem;
+      color: var(--text-dark);
+    }
+    
+    /* Responsive */
     @media (max-width: 768px) {
-      header h1 {
-        font-size: 2.2rem;
+      .hero-controls {
+        flex-direction: column;
+        gap: 1.5rem;
       }
       
-      header .tagline {
-        font-size: 1rem;
+      .search-input {
+        width: 100%;
       }
       
-      .controls {
-        gap: 1rem;
-      }
-      
-      .controls input[type="search"] {
-        width: 280px;
+      .book-grid {
+        grid-template-columns: 1fr;
+        gap: 2rem;
       }
       
       .modal-content {
-        padding: 2rem 1.5rem;
+        padding: 2rem;
         margin: 1rem;
       }
       
+      .modal-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+      
       .modal-cover {
-        float: none;
-        display: block;
-        margin: 0 auto 1.5rem;
         width: 160px;
         height: 240px;
       }
       
-      main.book-grid {
-        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-        gap: 1.5rem;
-        padding: 2rem 1rem;
+      .modal-title {
+        font-size: 2rem;
       }
       
-      .book-card img {
-        width: 150px;
-        height: 225px;
-      }
-      
-      .modal-content h2 {
-        font-size: 1.8rem;
-        text-align: center;
-      }
-      
-      .modal-content h3 {
-        text-align: center;
+      .books-section {
+        padding: 4rem 0;
       }
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>My Booklist</h1>
-    <p class="tagline">A curated collection of literary treasures</p>
-    <div class="controls">
-      <div class="search-container">
-        <input
-          type="search"
-          id="search-input"
-          placeholder="Search by title or author..."
-          aria-label="Search books"
-        />
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Literary Universe</h1>
+      <p>Discover extraordinary stories that shape our world</p>
+      
+      <div class="hero-controls">
+        <div class="search-container">
+          <span class="search-icon">🔍</span>
+          <input
+            type="search"
+            class="search-input"
+            id="search-input"
+            placeholder="Find your next great read..."
+            aria-label="Search books"
+          />
+        </div>
+        <button class="theme-toggle" id="theme-toggle">
+          🌙 Dark Mode
+        </button>
       </div>
-      <button id="dark-mode-toggle" aria-pressed="false" aria-label="Toggle dark mode">🌙 Dark Mode</button>
     </div>
-  </header>
+    
+    <div class="scroll-indicator">
+      <div style="font-size: 2rem;">↓</div>
+    </div>
+  </section>
 
-  <main class="book-grid" id="book-grid" tabindex="0" aria-live="polite">
-    <!-- Book cards inserted here by JS -->
-  </main>
+  <!-- Books Section -->
+  <section class="books-section">
+    <div class="container">
+      <div class="section-header">
+        <h2 class="section-title">Curated Collection</h2>
+        <p class="section-subtitle">Each book carefully selected for its power to inspire, challenge, and transform</p>
+      </div>
+      
+      <div class="book-grid" id="book-grid">
+        <!-- Books will be inserted here -->
+      </div>
+    </div>
+  </section>
 
-  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title" tabindex="-1" hidden>
-    <div class="modal-content" role="document">
+  <!-- Modal -->
+  <div class="modal" id="modal" role="dialog" aria-modal="true">
+    <div class="modal-content">
       <button class="close-btn" aria-label="Close modal">×</button>
-      <img src="" alt="" class="modal-cover" />
-      <h2 id="modal-title"></h2>
-      <h3></h3>
-      <p></p>
-      <button class="fav-btn large" aria-label="Toggle favorite">
-        <span class="star">★</span>
-        <span class="text">Add to favorites</span>
-      </button>
+      
+      <div class="modal-header">
+        <img class="modal-cover" src="" alt="" />
+        <div class="modal-info">
+          <h3 class="modal-title"></h3>
+          <p class="modal-author"></p>
+          <button class="modal-favorite-btn">
+            <span class="star">★</span>
+            <span class="text">Add to favorites</span>
+          </button>
+        </div>
+      </div>
+      
+      <p class="modal-description"></p>
     </div>
   </div>
 
-  <footer>
-    <p>Created with ❤️ and a love for great literature</p>
-  </footer>
-
-<script>
-  (function() {
+  <script>
+    // Books data
     const books = [
       {
         id: 1,
         title: "Monday's Not Coming",
         author: "Tiffany D. Jackson",
-        cover: "https://via.placeholder.com/180x270/667eea/ffffff?text=Monday's+Not+Coming",
-        description: "This gripping thriller follows Claudia as she investigates the mysterious disappearance of her best friend, Monday. As the adults around her dismiss her concerns, Claudia uncovers disturbing truths about systemic neglect. The novel powerfully explores themes of friendship, mental health, and the invisibility of Black girls in society. Jackson's narrative style is raw and immersive. The story is both heartbreaking and eye-opening, keeping readers questioning until the very end."
+        cover: "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=600&fit=crop",
+        description: "This gripping thriller follows Claudia as she investigates the mysterious disappearance of her best friend, Monday. As the adults around her dismiss her concerns, Claudia uncovers disturbing truths about systemic neglect. The novel powerfully explores themes of friendship, mental health, and the invisibility of Black girls in society. Jackson's narrative style is raw and immersive, keeping readers questioning until the very end."
       },
       {
         id: 2,
         title: "Behold the Dreamers",
         author: "Imbolo Mbue",
-        cover: "https://via.placeholder.com/180x270/764ba2/ffffff?text=Behold+the+Dreamers",
-        description: "Set during the 2008 financial crisis, this novel tells the story of a Cameroonian immigrant family chasing the American dream. Jende Jonga lands a job driving for a wealthy Lehman Brothers executive, exposing the stark contrasts between classes. As the economy crumbles, so does the illusion of security for both families. The book delves into immigration, ambition, and sacrifice. Mbue's writing is both compassionate and unflinching, offering a layered view of the immigrant experience."
+        cover: "https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=600&fit=crop",
+        description: "Set during the 2008 financial crisis, this novel tells the story of a Cameroonian immigrant family chasing the American dream. Jende Jonga lands a job driving for a wealthy Lehman Brothers executive, exposing stark contrasts between classes. As the economy crumbles, so does the illusion of security. Mbue's writing is both compassionate and unflinching, offering a layered view of the immigrant experience."
       },
       {
         id: 3,
         title: "The Corrections",
         author: "Jonathan Franzen",
-        cover: "https://via.placeholder.com/180x270/f093fb/ffffff?text=The+Corrections",
-        description: "This modern family saga follows the dysfunctional Lambert family as they grapple with aging, disappointment, and personal failures. Told through the perspectives of each family member, the novel is both darkly humorous and emotionally intense. Franzen captures the tension between traditional values and modern chaos. The characters are flawed yet deeply human, making their struggles feel relatable. The writing is richly detailed and often biting in its social commentary."
+        cover: "https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=600&fit=crop",
+        description: "This modern family saga follows the dysfunctional Lambert family as they grapple with aging, disappointment, and personal failures. Told through multiple perspectives, the novel is both darkly humorous and emotionally intense. Franzen captures the tension between traditional values and modern chaos with richly detailed and often biting social commentary."
       },
       {
         id: 4,
         title: "A Raisin in the Sun",
         author: "Lorraine Hansberry",
-        cover: "https://via.placeholder.com/180x270/f5576c/ffffff?text=A+Raisin+in+the+Sun",
-        description: "This iconic play portrays a Black family's pursuit of a better life on Chicago's South Side. When the Youngers receive a life insurance check, dreams clash and tensions rise. Each character envisions a different future, revealing generational and ideological divides. Hansberry explores themes of racism, identity, and hope with depth and clarity. The story remains a powerful reflection on systemic injustice and the resilience of family bonds."
+        cover: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop",
+        description: "This iconic play portrays a Black family's pursuit of a better life on Chicago's South Side. When the Youngers receive a life insurance check, dreams clash and tensions rise. Each character envisions a different future, revealing generational and ideological divides. A powerful reflection on systemic injustice and family resilience."
       },
       {
         id: 5,
         title: "The Namesake",
         author: "Jhumpa Lahiri",
-        cover: "https://via.placeholder.com/180x270/4facfe/ffffff?text=The+Namesake",
-        description: "This novel follows Gogol Ganguli, the American-born son of Bengali immigrants, as he struggles with his cultural identity. Named after the Russian author Nikolai Gogol, he grapples with his unusual name and the weight of family expectations. Lahiri explores the immigrant experience with nuance and grace. The book is a meditation on heritage, belonging, and the ways we define ourselves. Lahiri's prose is quiet but powerful, making ordinary moments deeply affecting."
+        cover: "https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&h=600&fit=crop",
+        description: "Following Gogol Ganguli, the American-born son of Bengali immigrants, as he struggles with cultural identity. Named after Russian author Nikolai Gogol, he grapples with his unusual name and family expectations. Lahiri explores the immigrant experience with nuance and grace, making ordinary moments deeply affecting."
       },
       {
         id: 6,
         title: "Interpreter of Maladies",
         author: "Jhumpa Lahiri",
-        cover: "https://via.placeholder.com/180x270/00f2fe/ffffff?text=Interpreter+of+Maladies",
-        description: "This Pulitzer Prize-winning collection of short stories explores the lives of Indian and Indian-American characters navigating cultural transitions. Each story captures subtle emotional shifts and quiet revelations. Lahiri's characters are often caught between tradition and modernity, loneliness and connection. Her writing is elegant, restrained, and rich with insight. The collection offers a poignant exploration of identity and human vulnerability."
+        cover: "https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?w=400&h=600&fit=crop",
+        description: "This Pulitzer Prize-winning collection explores the lives of Indian and Indian-American characters navigating cultural transitions. Each story captures subtle emotional shifts and quiet revelations. Lahiri's elegant, restrained writing offers poignant exploration of identity and human vulnerability."
       },
       {
         id: 7,
         title: "Eleanor Oliphant is Completely Fine",
         author: "Gail Honeyman",
-        cover: "https://via.placeholder.com/180x270/667eea/ffffff?text=Eleanor+Oliphant+is+Fine",
-        description: "Eleanor Oliphant lives a routine, isolated life until an unexpected friendship begins to transform her world. As the layers of her past are slowly revealed, Eleanor's resilience and pain come into focus. The novel balances heartbreak and humor with grace. Honeyman creates a unique and unforgettable character who challenges our ideas of mental health and healing. It's an uplifting story about connection, loneliness, and second chances."
+        cover: "https://images.unsplash.com/photo-1543002588-bfa74002ed7e?w=400&h=600&fit=crop",
+        description: "Eleanor lives a routine, isolated life until unexpected friendship transforms her world. As layers of her past are revealed, Eleanor's resilience and pain come into focus. Honeyman balances heartbreak and humor with grace, creating an unforgettable character who challenges ideas of mental health and healing."
       },
       {
         id: 8,
         title: "The Alchemist",
         author: "Paulo Coelho",
-        cover: "https://via.placeholder.com/180x270/764ba2/ffffff?text=The+Alchemist",
-        description: "This philosophical novel follows Santiago, a shepherd boy who dreams of finding treasure in Egypt. Along his journey, he meets mentors, faces challenges, and discovers deeper truths about destiny and purpose. Coelho's writing is simple yet profound, filled with symbolism and spiritual insight. The story encourages readers to follow their personal legend and listen to their hearts. It's a timeless fable about dreams, faith, and self-discovery."
+        cover: "https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=600&fit=crop",
+        description: "Following Santiago, a shepherd boy who dreams of finding treasure in Egypt. Along his journey, he meets mentors, faces challenges, and discovers deeper truths about destiny and purpose. Coelho's simple yet profound writing is filled with symbolism and spiritual insight—a timeless fable about dreams and self-discovery."
       },
       {
         id: 9,
         title: "The Phantom Tollbooth",
         author: "Norton Juster",
-        cover: "https://via.placeholder.com/180x270/f093fb/ffffff?text=The+Phantom+Tollbooth",
-        description: "This whimsical adventure follows a bored boy named Milo who drives through a magical tollbooth into a world of wordplay and imagination. Along the way, he meets eccentric characters like Tock the watchdog and the Humbug. The story is both humorous and deeply philosophical, encouraging curiosity and critical thinking. Juster blends puns and parables to create a clever, entertaining tale. It's a celebration of learning, wonder, and the joy of discovery."
-      },
+        cover: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&h=600&fit=crop",
+        description: "This whimsical adventure follows bored Milo who drives through a magical tollbooth into a world of wordplay and imagination. Meeting eccentric characters like Tock the watchdog, the story is both humorous and philosophical, encouraging curiosity and critical thinking—a celebration of learning and wonder."
+      }
     ];
-
-    // Cached DOM elements
-    const bookGrid = document.getElementById('book-grid');
-    const searchInput = document.getElementById('search-input');
-    const modal = document.getElementById('modal');
-    const modalTitle = modal.querySelector('#modal-title');
-    const modalAuthor = modal.querySelector('h3');
-    const modalDescription = modal.querySelector('p');
-    const modalCover = modal.querySelector('.modal-cover');
-    const modalCloseBtn = modal.querySelector('.close-btn');
-    const modalFavBtn = modal.querySelector('.fav-btn.large');
-    const modalFavText = modalFavBtn.querySelector('.text');
-    const modalFavStar = modalFavBtn.querySelector('.star');
-    const darkModeToggle = document.getElementById('dark-mode-toggle');
 
     // State
     let favorites = new Set();
     let filteredBooks = [...books];
-    let currentModalBookId = null;
+    let currentBook = null;
 
-    // Create a book card DOM node
+    // DOM elements
+    const bookGrid = document.getElementById('book-grid');
+    const searchInput = document.getElementById('search-input');
+    const themeToggle = document.getElementById('theme-toggle');
+    const modal = document.getElementById('modal');
+    const modalTitle = modal.querySelector('.modal-title');
+    const modalAuthor = modal.querySelector('.modal-author');
+    const modalDescription = modal.querySelector('.modal-description');
+    const modalCover = modal.querySelector('.modal-cover');
+    const modalFavoriteBtn = modal.querySelector('.modal-favorite-btn');
+    const closeBtn = modal.querySelector('.close-btn');
+
+    // Create book card
     function createBookCard(book) {
       const card = document.createElement('div');
-      card.className = 'book-card';
+      card.className = `book-card ${favorites.has(book.id) ? 'favorite' : ''}`;
       card.setAttribute('tabindex', '0');
-      card.setAttribute('role', 'button');
-      card.setAttribute('aria-pressed', favorites.has(book.id) ? 'true' : 'false');
-      card.setAttribute('aria-label', `View details for ${book.title} by ${book.author}`);
-
-      const coverContainer = document.createElement('div');
-      coverContainer.className = 'book-cover-container';
-
-      const img = document.createElement('img');
-      img.src = book.cover;
-      img.alt = `Cover of ${book.title}`;
-      img.onerror = function() {
-        // Fallback to gradient background with title
-        this.style.background = `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`;
-        this.style.display = 'flex';
-        this.style.alignItems = 'center';
-        this.style.justifyContent = 'center';
-        this.style.fontSize = '0.9rem';
-        this.style.fontWeight = '600';
-        this.style.textAlign = 'center';
-        this.style.padding = '1rem';
-        this.style.color = 'white';
-        this.innerHTML = book.title;
-      };
-
-      const h2 = document.createElement('h2');
-      h2.textContent = book.title;
-
-      const author = document.createElement('p');
-      author.className = 'author';
-      author.textContent = `by ${book.author}`;
-
-      const favBtn = document.createElement('button');
-      favBtn.className = 'fav-btn';
-      favBtn.innerHTML = favorites.has(book.id) ? '★' : '☆';
-      favBtn.title = favorites.has(book.id) ? 'Remove from favorites' : 'Add to favorites';
-      favBtn.setAttribute('aria-label', favBtn.title);
-      favBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        toggleFavorite(book.id, favBtn, card);
-      });
-
-      if (favorites.has(book.id)) {
-        card.classList.add('fav');
-      }
-
-      coverContainer.appendChild(img);
-      card.appendChild(coverContainer);
-      card.appendChild(h2);
-      card.appendChild(author);
-      card.appendChild(favBtn);
-
-      // Click / keyboard enter opens modal
-      card.addEventListener('click', () => openModal(book.id));
-      card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault();
-          openModal(book.id);
-        }
-      });
-
-      return card;
-    }
-
-    function toggleFavorite(bookId, btn, card) {
-      if (favorites.has(bookId)) {
-        favorites.delete(bookId);
-        btn.innerHTML = '☆';
-        btn.title = 'Add to favorites';
-        card.classList.remove('fav');
-      } else {
-        favorites.add(bookId);
-        btn.innerHTML = '★';
-        btn.title = 'Remove from favorites';
-        card.classList.add('fav');
-      }
-      btn.setAttribute('aria-label', btn.title);
-    }
-
-    // Render book cards to grid
-    function renderBooks(bookList) {
-      bookGrid.innerHTML = '';
-      if (bookList.length === 0) {
-        const msg = document.createElement('div');
-        msg.style.gridColumn = '1/-1';
-        msg.style.textAlign = 'center';
-        msg.style.padding = '3rem';
-        msg.style.fontSize = '1.2rem';
-        msg.style.color = 'var(--text-muted-light)';
-        msg.innerHTML = `
-          <div style="font-size: 4rem; margin-bottom: 1rem;">📚</div>
-          <p>No books found matching your search.</p>
-          <p style="font-size: 1rem; margin-top: 0.5rem;">Try adjusting your search terms.</p>
-        `;
-        bookGrid.appendChild(msg);
-        return;
-      }
-      bookList.forEach((book, index) => {
-        const card = createBookCard(book);
-        card.style.animationDelay = `${index * 0.1}s`;
-        card.style.animation = 'fadeInUp 0.6s ease forwards';
-        bookGrid.appendChild(card);
-      });
-    }
-
-    // Filter books based on search input
-    function filterBooks(query) {
-      const q = query.trim().toLowerCase();
-      filteredBooks = books.filter(book =>
-        book.title.toLowerCase().includes(q) || book.author.toLowerCase().includes(q)
-      );
-      renderBooks(filteredBooks);
-    }
-
-    // Open modal with book details
-    function openModal(bookId) {
-      const book = books.find(b => b.id === bookId);
-      if (!book) return;
-
-      currentModalBookId = bookId;
-      modalTitle.textContent = book.title;
-      modalAuthor.textContent = `by ${book.author}`;
-      modalDescription.textContent = book.description;
-      modalCover.src = book.cover;
-      modalCover.alt = `Cover of ${book.title}`;
       
-      // Handle modal cover image error
-      modalCover.onerror = function() {
-        this.style.background = `linear-gradient(135deg, #667eea 0%, #764ba2 100%)`;
-        this.style.display = 'flex';
-        this.style.alignItems = 'center';
-        this.style.justifyContent = 'center';
-        this.style.fontSize = '1rem';
-        this.style.fontWeight = '600';
-        this.style.textAlign = 'center';
-        this.style.padding = '1rem';
-        this.style.color = 'white';
-        this.innerHTML = book.title;
-      };
-
-      // Set favorite btn text & aria-label
-      if (favorites.has(bookId)) {
-        modalFavStar.textContent = '★';
-        modalFavText.textContent = 'Remove from favorites';
-        modalFavBtn.setAttribute('aria-label', `Remove ${book.title} from favorites`);
-      } else {
-        modalFavStar.textContent = '☆';
-        modalFavText.textContent = 'Add to favorites';
-        modalFavBtn.setAttribute('aria-label', `Add ${book.title} to favorites`);
-      }
-
-      modal.setAttribute('aria-hidden', 'false');
-      modal.hidden = false;
-      modal.focus();
-      document.body.style.overflow = 'hidden';
-    }
-
-    // Close modal
-    function closeModal() {
-      currentModalBookId = null;
-      modal.setAttribute('aria-hidden', 'true');
-      modal.hidden = true;
-      document.body.style.overflow = '';
-    }
-
-    // Toggle favorite from modal
-    modalFavBtn.addEventListener('click', () => {
-      if (currentModalBookId == null) return;
-      const bookId = currentModalBookId;
-      if (favorites.has(bookId)) {
-        favorites.delete(bookId);
-        modalFavStar.textContent = '☆';
-        modalFavText.textContent = 'Add to favorites';
-        modalFavBtn.setAttribute('aria-label', `Add book to favorites`);
-      } else {
-        favorites.add(bookId);
-        modalFavStar.textContent = '★';
-        modalFavText.textContent = 'Remove from favorites';
-        modalFavBtn.setAttribute('aria-label', `Remove book from favorites`);
-      }
-      // Also update the card on page
-      renderBooks(filteredBooks);
-    });
-
-    modalCloseBtn.addEventListener('click', closeModal);
-    modal.addEventListener('click', e => {
-      if (e.target === modal) closeModal();
-    });
-
-    // Keyboard navigation for modal
-    document.addEventListener('keydown', e => {
-      if (!modal.hidden && e.key === 'Escape') {
-        closeModal();
-      }
-    });
-
-    // Dark mode toggle
-    function setDarkMode(on) {
-      if (on) {
-        document.body.classList.add('dark');
-        darkModeToggle.innerHTML = '☀️ Light Mode';
-        darkModeToggle.setAttribute('aria-pressed', 'true');
-      } else {
-        document.body.classList.remove('dark');
-        darkModeToggle.innerHTML = '🌙 Dark Mode';
-        darkModeToggle.setAttribute('aria-pressed', 'false');
-      }
-    }
-    
-    darkModeToggle.addEventListener('click', () => {
-      setDarkMode(!document.body.classList.contains('dark'));
-    });
-    
-    // Initialize dark mode (default to light)
-    setDarkMode(false);
-
-    // Search input listener
-    searchInput.addEventListener('input', e => {
-      filterBooks(e.target.value);
-    });
-
-    // Add some CSS animations
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes fadeInUp {
-        from {
-          opacity: 0;
-          transform: translateY(30px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-    `;
-    document.head.appendChild(style);
-
-    // Initial render
-    renderBooks(books);
-  })();
-</script>
-</body>
-</html>
+      card.innerHTML = `
+        <button class="favorite-btn" aria-label="Toggle favorite">
+          ${favorites.has(book.id) ? '★' : '☆'}
+        </button>
+        <img class="book-cover" src="${book.cover}" alt="Cover of ${book.title}" 
+             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDIwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8dGV4dCB4PSIxMDAiIHk9IjE1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj4ke2Jvb2sudGl0bGV9PC90ZXh0Pgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4='" />
+        <h3 class
