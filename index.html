@@ -710,15 +710,113 @@
     const closeBtn = modal.querySelector('.close-btn');
 
     // Create book card
-    function createBookCard(book) {
-      const card = document.createElement('div');
-      card.className = `book-card ${favorites.has(book.id) ? 'favorite' : ''}`;
-      card.setAttribute('tabindex', '0');
-      
-      card.innerHTML = `
-        <button class="favorite-btn" aria-label="Toggle favorite">
-          ${favorites.has(book.id) ? '★' : '☆'}
-        </button>
-        <img class="book-cover" src="${book.cover}" alt="Cover of ${book.title}" 
-             onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjMwMCIgdmlld0JveD0iMCAwIDIwMCAzMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIyMDAiIGhlaWdodD0iMzAwIiBmaWxsPSJ1cmwoI2dyYWRpZW50KSIvPgo8dGV4dCB4PSIxMDAiIHk9IjE1MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9InNhbnMtc2VyaWYiIGZvbnQtc2l6ZT0iMTQiIGZpbGw9IndoaXRlIj4ke2Jvb2sudGl0bGV9PC90ZXh0Pgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJncmFkaWVudCIgeDE9IjAlIiB5MT0iMCUiIHgyPSIxMDAlIiB5Mj0iMTAwJSI+CjxzdG9wIG9mZnNldD0iMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiM2NjdlZWE7c3RvcC1vcGFjaXR5OjEiIC8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6Izc2NGJhMjtzdG9wLW9wYWNpdHk6MSIgLz4KPC9saW5lYXJHcmFkaWVudD4KPC9kZWZzPgo8L3N2Zz4='" />
-        <h3 class
+<script>
+  // Render books
+  function renderBooks(bookList) {
+    bookGrid.innerHTML = '';
+
+    if (bookList.length === 0) {
+      bookGrid.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">📚</div>
+          <h3>No books found</h3>
+          <p>Try a different search or explore other categories</p>
+        </div>
+      `;
+      return;
+    }
+
+    bookList.forEach(book => {
+      const card = createBookCard(book);
+      bookGrid.appendChild(card);
+    });
+  }
+
+  // Create book card
+  function createBookCard(book) {
+    const card = document.createElement('div');
+    card.className = `book-card ${favorites.has(book.id) ? 'favorite' : ''}`;
+    card.setAttribute('tabindex', '0');
+
+    card.innerHTML = `
+      <button class="favorite-btn" aria-label="Toggle favorite">${favorites.has(book.id) ? '★' : '☆'}</button>
+      <img class="book-cover" src="${book.cover}" alt="Cover of ${book.title}" />
+      <h3 class="book-title">${book.title}</h3>
+      <p class="book-author">${book.author}</p>
+    `;
+
+    // Favorite button toggle
+    const favBtn = card.querySelector('.favorite-btn');
+    favBtn.addEventListener('click', e => {
+      e.stopPropagation();
+      if (favorites.has(book.id)) {
+        favorites.delete(book.id);
+      } else {
+        favorites.add(book.id);
+      }
+      renderBooks(filteredBooks);
+    });
+
+    // Open modal
+    card.addEventListener('click', () => {
+      openModal(book);
+    });
+
+    return card;
+  }
+
+  // Open modal
+  function openModal(book) {
+    currentBook = book;
+    modalTitle.textContent = book.title;
+    modalAuthor.textContent = book.author;
+    modalDescription.textContent = book.description;
+    modalCover.src = book.cover;
+    modal.classList.add('active');
+
+    // Update favorite button in modal
+    modalFavoriteBtn.querySelector('.text').textContent = favorites.has(book.id)
+      ? 'Remove from favorites'
+      : 'Add to favorites';
+  }
+
+  // Close modal
+  closeBtn.addEventListener('click', () => {
+    modal.classList.remove('active');
+  });
+
+  // Toggle favorite from modal
+  modalFavoriteBtn.addEventListener('click', () => {
+    if (!currentBook) return;
+
+    if (favorites.has(currentBook.id)) {
+      favorites.delete(currentBook.id);
+    } else {
+      favorites.add(currentBook.id);
+    }
+
+    modal.classList.remove('active');
+    renderBooks(filteredBooks);
+  });
+
+  // Search filter
+  searchInput.addEventListener('input', () => {
+    const query = searchInput.value.trim().toLowerCase();
+    filteredBooks = books.filter(book =>
+      book.title.toLowerCase().includes(query) ||
+      book.author.toLowerCase().includes(query)
+    );
+    renderBooks(filteredBooks);
+  });
+
+  // Theme toggle
+  themeToggle.addEventListener('click', () => {
+    document.body.classList.toggle('dark');
+    themeToggle.textContent = document.body.classList.contains('dark')
+      ? '☀️ Light Mode'
+      : '🌙 Dark Mode';
+  });
+
+  // Initial render
+  renderBooks(filteredBooks);
+</script>
