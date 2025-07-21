@@ -2,85 +2,598 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Booklist</title>
-  <link href="styles.css" rel="stylesheet" />
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>My Interactive Booklist</title>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display&family=Roboto&display=swap" rel="stylesheet" />
+  <style>
+    /* Reset & base */
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+      transition: background 0.3s, color 0.3s;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+    body.dark {
+      background: #121212;
+      color: #eee;
+    }
+    header {
+      background: #6200ea;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+    }
+    header .tagline {
+      font-style: italic;
+      margin: 0.2rem 0 1rem;
+      font-family: 'Playfair Display', serif;
+      font-weight: 400;
+    }
+    .controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      flex-wrap: wrap;
+      margin-top: 0.5rem;
+    }
+    .controls input[type="search"] {
+      padding: 0.5rem 1rem;
+      font-size: 1rem;
+      border-radius: 25px;
+      border: none;
+      width: 250px;
+      max-width: 90vw;
+      outline: none;
+      transition: box-shadow 0.3s;
+    }
+    .controls input[type="search"]:focus {
+      box-shadow: 0 0 8px #6200ea;
+    }
+    .controls button {
+      cursor: pointer;
+      border: none;
+      background: #3700b3;
+      color: white;
+      padding: 0.5rem 1rem;
+      border-radius: 25px;
+      font-weight: 600;
+      transition: background 0.3s;
+    }
+    .controls button:hover,
+    .controls button:focus {
+      background: #5600e8;
+      outline: none;
+    }
+
+    main.book-grid {
+      flex-grow: 1;
+      display: grid;
+      grid-template-columns: repeat(auto-fill,minmax(220px,1fr));
+      gap: 1rem;
+      padding: 1rem;
+      max-width: 1200px;
+      margin: auto;
+      width: 100%;
+    }
+    .book-card {
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 10px rgb(0 0 0 / 0.1);
+      padding: 1rem;
+      cursor: pointer;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform 0.3s, box-shadow 0.3s;
+      user-select: none;
+    }
+    body.dark .book-card {
+      background: #1e1e1e;
+      box-shadow: 0 4px 15px rgba(100, 100, 255, 0.15);
+      color: #eee;
+    }
+    .book-card:hover,
+    .book-card:focus {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgb(0 0 0 / 0.2);
+      outline: none;
+    }
+    .book-card img {
+      width: 150px;
+      height: 220px;
+      object-fit: cover;
+      border-radius: 6px;
+      margin-bottom: 1rem;
+      box-shadow: 0 4px 6px rgb(0 0 0 / 0.15);
+      flex-shrink: 0;
+    }
+    .book-card h2 {
+      font-family: 'Playfair Display', serif;
+      margin: 0 0 0.5rem;
+      font-size: 1.2rem;
+      text-align: center;
+      user-select: text;
+    }
+    .book-card .author {
+      font-style: italic;
+      color: #555;
+      margin-bottom: 0.8rem;
+      user-select: text;
+    }
+    body.dark .book-card .author {
+      color: #ccc;
+    }
+    .fav-btn {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      background: transparent;
+      font-size: 1.6rem;
+      color: #e3a21a;
+      border: none;
+      user-select: none;
+      cursor: pointer;
+      transition: color 0.3s;
+    }
+    .fav-btn:hover,
+    .fav-btn:focus {
+      color: #ffc107;
+      outline: none;
+    }
+    .fav {
+      box-shadow: 0 0 15px #e3a21a;
+    }
+
+    .modal {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(0,0,0,0.7);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease forwards;
+      z-index: 100;
+      padding: 1rem;
+    }
+    .modal-content {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      width: 100%;
+      max-width: 700px;
+      max-height: 90vh;
+      overflow-y: auto;
+      position: relative;
+      color: #333;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+    }
+    body.dark .modal-content {
+      background: #222;
+      color: #eee;
+    }
+    .modal-cover {
+      width: 150px;
+      height: 220px;
+      object-fit: cover;
+      float: left;
+      margin-right: 1.5rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgb(0 0 0 / 0.2);
+      flex-shrink: 0;
+    }
+    .modal-content h2 {
+      font-family: 'Playfair Display', serif;
+      margin-top: 0;
+      margin-bottom: 0.3rem;
+    }
+    .modal-content h3 {
+      margin-top: 0;
+      font-weight: normal;
+      font-style: italic;
+      color: #555;
+      margin-bottom: 1rem;
+    }
+    body.dark .modal-content h3 {
+      color: #aaa;
+    }
+    .modal-content p {
+      line-height: 1.5;
+      user-select: text;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px;
+      right: 15px;
+      background: transparent;
+      border: none;
+      font-size: 2rem;
+      cursor: pointer;
+      color: #6200ea;
+      font-weight: 700;
+      user-select: none;
+      transition: color 0.3s;
+    }
+    .close-btn:hover,
+    .close-btn:focus {
+      color: #3700b3;
+      outline: none;
+    }
+    .fav-btn.large {
+      font-size: 1.4rem;
+      margin-top: 1.5rem;
+      background: #6200ea;
+      padding: 0.7rem 1.5rem;
+      border-radius: 30px;
+      color: white;
+      font-weight: 700;
+      display: inline-block;
+      user-select: none;
+      cursor: pointer;
+      border: none;
+      transition: background 0.3s;
+    }
+    .fav-btn.large:hover,
+    .fav-btn.large:focus {
+      background: #3700b3;
+      outline: none;
+    }
+
+    @keyframes fadeIn {
+      from {opacity: 0;}
+      to {opacity: 1;}
+    }
+
+    footer {
+      padding: 1rem;
+      text-align: center;
+      color: #777;
+      font-size: 0.9rem;
+      user-select: none;
+    }
+    body.dark footer {
+      color: #aaa;
+    }
+
+    @media (max-width: 600px) {
+      .modal-content {
+        padding: 1rem;
+      }
+      .modal-cover {
+        float: none;
+        display: block;
+        margin: 0 auto 1rem;
+      }
+      main.book-grid {
+        grid-template-columns: repeat(auto-fill,minmax(180px,1fr));
+      }
+      .book-card img {
+        width: 120px;
+        height: 180px;
+      }
+    }
+  </style>
 </head>
 <body>
   <header>
     <h1>My Booklist</h1>
     <p class="tagline">A curated collection of books I love</p>
+    <div class="controls">
+      <input
+        type="search"
+        id="search-input"
+        placeholder="Search by title or author..."
+        aria-label="Search books"
+      />
+      <button id="dark-mode-toggle" aria-pressed="false" aria-label="Toggle dark mode">Dark Mode</button>
+    </div>
   </header>
 
-  <main class="book-grid">
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/10212725-L.jpg" alt="Mondays Not Coming">
-  <h2>Mondays Not Coming</h2>
-  <p class="author">by Tiffany D. Jackson</p>
-  <p class="note">This gripping thriller follows Claudia as she investigates the mysterious disappearance of her best friend, Monday. As the adults around her dismiss her concerns, Claudia uncovers disturbing truths about systemic neglect. The novel powerfully explores themes of friendship, mental health, and the invisibility of Black girls in society. Jackson’s narrative style is raw and immersive. The story is both heartbreaking and eye-opening, keeping readers questioning until the very end.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/8235111-L.jpg" alt="Behold the Dreamers">
-  <h2>Behold the Dreamers</h2>
-  <p class="author">by Imbolo Mbue</p>
-  <p class="note">Set during the 2008 financial crisis, this novel tells the story of a Cameroonian immigrant family chasing the American dream. Jende Jonga lands a job driving for a wealthy Lehman Brothers executive, exposing the stark contrasts between classes. As the economy crumbles, so does the illusion of security for both families. The book delves into immigration, ambition, and sacrifice. Mbue's writing is both compassionate and unflinching, offering a layered view of the immigrant experience.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/240726-L.jpg" alt="The Corrections">
-  <h2>The Corrections</h2>
-  <p class="author">by Jonathan Franzen</p>
-  <p class="note">This modern family saga follows the dysfunctional Lambert family as they grapple with aging, disappointment, and personal failures. Told through the perspectives of each family member, the novel is both darkly humorous and emotionally intense. Franzen captures the tension between traditional values and modern chaos. The characters are flawed yet deeply human, making their struggles feel relatable. The writing is richly detailed and often biting in its social commentary.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/8228691-L.jpg" alt="A Raisin in the Sun">
-  <h2>A Raisin in the Sun</h2>
-  <p class="author">by Lorraine Hansberry</p>
-  <p class="note">This iconic play portrays a Black family's pursuit of a better life on Chicago’s South Side. When the Youngers receive a life insurance check, dreams clash and tensions rise. Each character envisions a different future, revealing generational and ideological divides. Hansberry explores themes of racism, identity, and hope with depth and clarity. The story remains a powerful reflection on systemic injustice and the resilience of family bonds.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/9284667-L.jpg" alt="The Namesake">
-  <h2>The Namesake</h2>
-  <p class="author">by Jhumpa Lahiri</p>
-  <p class="note">This novel follows Gogol Ganguli, the American-born son of Bengali immigrants, as he struggles with his cultural identity. Named after the Russian author Nikolai Gogol, he grapples with his unusual name and the weight of family expectations. Lahiri explores the immigrant experience with nuance and grace. The book is a meditation on heritage, belonging, and the ways we define ourselves. Lahiri’s prose is quiet but powerful, making ordinary moments deeply affecting.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/240727-L.jpg" alt="Interpreter of Maladies">
-  <h2>Interpreter of Maladies</h2>
-  <p class="author">by Jhumpa Lahiri</p>
-  <p class="note">This Pulitzer Prize-winning collection of short stories explores the lives of Indian and Indian-American characters navigating cultural transitions. Each story captures subtle emotional shifts and quiet revelations. Lahiri's characters are often caught between tradition and modernity, loneliness and connection. Her writing is elegant, restrained, and rich with insight. The collection offers a poignant exploration of identity and human vulnerability.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/8231996-L.jpg" alt="Eleanor Oliphant is Completely Fine">
-  <h2>Eleanor Oliphant is Completely Fine</h2>
-  <p class="author">by Gail Honeyman</p>
-  <p class="note">Eleanor Oliphant lives a routine, isolated life until an unexpected friendship begins to transform her world. As the layers of her past are slowly revealed, Eleanor’s resilience and pain come into focus. The novel balances heartbreak and humor with grace. Honeyman creates a unique and unforgettable character who challenges our ideas of mental health and healing. It’s an uplifting story about connection, loneliness, and second chances.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/8225631-L.jpg" alt="The Alchemist">
-  <h2>The Alchemist</h2>
-  <p class="author">by Paulo Coelho</p>
-  <p class="note">This philosophical novel follows Santiago, a shepherd boy who dreams of finding treasure in Egypt. Along his journey, he meets mentors, faces challenges, and discovers deeper truths about destiny and purpose. Coelho’s writing is simple yet profound, filled with symbolism and spiritual insight. The story encourages readers to follow their personal legend and listen to their hearts. It's a timeless fable about dreams, faith, and self-discovery.</p>
-</div>
-
-<div class="book-card">
-  <img src="https://covers.openlibrary.org/b/id/8226198-L.jpg" alt="The Phantom Tollbooth">
-  <h2>The Phantom Tollbooth</h2>
-  <p class="author">by Norton Juster</p>
-  <p class="note">This whimsical adventure follows a bored boy named Milo who drives through a magical tollbooth into a world of wordplay and imagination. Along the way, he meets eccentric characters like Tock the watchdog and the Humbug. The story is both humorous and deeply philosophical, encouraging curiosity and critical thinking. Juster blends puns and parables to create a clever, entertaining tale. It's a celebration of learning, wonder, and the joy of discovery.</p>
-</div>
-    <!-- Add more books here -->
+  <main class="book-grid" id="book-grid" tabindex="0" aria-live="polite">
+    <!-- Book cards inserted here by JS -->
   </main>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true" aria-hidden="true" aria-labelledby="modal-title" tabindex="-1" hidden>
+    <div class="modal-content" role="document">
+      <button class="close-btn" aria-label="Close modal">&times;</button>
+      <img src="" alt="" class="modal-cover" />
+      <h2 id="modal-title"></h2>
+      <h3></h3>
+      <p></p>
+      <button class="fav-btn large" aria-label="Toggle favorite"></button>
+    </div>
+  </div>
 
   <footer>
     <p>Created with ❤️ by Your Name</p>
   </footer>
+
+<script>
+  (function() {
+    const books = [
+      {
+        id: 1,
+        title: "Mondays Not Coming",
+        author: "Tiffany D. Jackson",
+        cover: "https://covers.openlibrary.org/b/id/10212725-L.jpg",
+        description: "This gripping thriller follows Claudia as she investigates the mysterious disappearance of her best friend, Monday. As the adults around her dismiss her concerns, Claudia uncovers disturbing truths about systemic neglect. The novel powerfully explores themes of friendship, mental health, and the invisibility of Black girls in society. Jackson’s narrative style is raw and immersive. The story is both heartbreaking and eye-opening, keeping readers questioning until the very end."
+      },
+      {
+        id: 2,
+        title: "Behold the Dreamers",
+        author: "Imbolo Mbue",
+        cover: "https://covers.openlibrary.org/b/id/8235111-L.jpg",
+        description: "Set during the 2008 financial crisis, this novel tells the story of a Cameroonian immigrant family chasing the American dream. Jende Jonga lands a job driving for a wealthy Lehman Brothers executive, exposing the stark contrasts between classes. As the economy crumbles, so does the illusion of security for both families. The book delves into immigration, ambition, and sacrifice. Mbue's writing is both compassionate and unflinching, offering a layered view of the immigrant experience."
+      },
+      {
+        id: 3,
+        title: "The Corrections",
+        author: "Jonathan Franzen",
+        cover: "https://covers.openlibrary.org/b/id/240726-L.jpg",
+        description: "This modern family saga follows the dysfunctional Lambert family as they grapple with aging, disappointment, and personal failures. Told through the perspectives of each family member, the novel is both darkly humorous and emotionally intense. Franzen captures the tension between traditional values and modern chaos. The characters are flawed yet deeply human, making their struggles feel relatable. The writing is richly detailed and often biting in its social commentary."
+      },
+      {
+        id: 4,
+        title: "A Raisin in the Sun",
+        author: "Lorraine Hansberry",
+        cover: "https://covers.openlibrary.org/b/id/8228691-L.jpg",
+        description: "This iconic play portrays a Black family's pursuit of a better life on Chicago’s South Side. When the Youngers receive a life insurance check, dreams clash and tensions rise. Each character envisions a different future, revealing generational and ideological divides. Hansberry explores themes of racism, identity, and hope with depth and clarity. The story remains a powerful reflection on systemic injustice and the resilience of family bonds."
+      },
+      {
+        id: 5,
+        title: "The Namesake",
+        author: "Jhumpa Lahiri",
+        cover: "https://covers.openlibrary.org/b/id/9284667-L.jpg",
+        description: "This novel follows Gogol Ganguli, the American-born son of Bengali immigrants, as he struggles with his cultural identity. Named after the Russian author Nikolai Gogol, he grapples with his unusual name and the weight of family expectations. Lahiri explores the immigrant experience with nuance and grace. The book is a meditation on heritage, belonging, and the ways we define ourselves. Lahiri’s prose is quiet but powerful, making ordinary moments deeply affecting."
+      },
+      {
+        id: 6,
+        title: "Interpreter of Maladies",
+        author: "Jhumpa Lahiri",
+        cover: "https://covers.openlibrary.org/b/id/240727-L.jpg",
+        description: "This Pulitzer Prize-winning collection of short stories explores the lives of Indian and Indian-American characters navigating cultural transitions. Each story captures subtle emotional shifts and quiet revelations. Lahiri's characters are often caught between tradition and modernity, loneliness and connection. Her writing is elegant, restrained, and rich with insight. The collection offers a poignant exploration of identity and human vulnerability."
+      },
+      {
+        id: 7,
+        title: "Eleanor Oliphant is Completely Fine",
+        author: "Gail Honeyman",
+        cover: "https://covers.openlibrary.org/b/id/8231996-L.jpg",
+        description: "Eleanor Oliphant lives a routine, isolated life until an unexpected friendship begins to transform her world. As the layers of her past are slowly revealed, Eleanor’s resilience and pain come into focus. The novel balances heartbreak and humor with grace. Honeyman creates a unique and unforgettable character who challenges our ideas of mental health and healing. It’s an uplifting story about connection, loneliness, and second chances."
+      },
+      {
+        id: 8,
+        title: "The Alchemist",
+        author: "Paulo Coelho",
+        cover: "https://covers.openlibrary.org/b/id/8225631-L.jpg",
+        description: "This philosophical novel follows Santiago, a shepherd boy who dreams of finding treasure in Egypt. Along his journey, he meets mentors, faces challenges, and discovers deeper truths about destiny and purpose. Coelho’s writing is simple yet profound, filled with symbolism and spiritual insight. The story encourages readers to follow their personal legend and listen to their hearts. It's a timeless fable about dreams, faith, and self-discovery."
+      },
+      {
+        id: 9,
+        title: "The Phantom Tollbooth",
+        author: "Norton Juster",
+        cover: "https://covers.openlibrary.org/b/id/8226198-L.jpg",
+        description: "This whimsical adventure follows a bored boy named Milo who drives through a magical tollbooth into a world of wordplay and imagination. Along the way, he meets eccentric characters like Tock the watchdog and the Humbug. The story is both humorous and deeply philosophical, encouraging curiosity and critical thinking. Juster blends puns and parables to create a clever, entertaining tale. It's a celebration of learning, wonder, and the joy of discovery."
+      },
+    ];
+
+    // Cached DOM elements
+    const bookGrid = document.getElementById('book-grid');
+    const searchInput = document.getElementById('search-input');
+    const modal = document.getElementById('modal');
+    const modalTitle = modal.querySelector('#modal-title');
+    const modalAuthor = modal.querySelector('h3');
+    const modalDescription = modal.querySelector('p');
+    const modalCover = modal.querySelector('.modal-cover');
+    const modalCloseBtn = modal.querySelector('.close-btn');
+    const modalFavBtn = modal.querySelector('.fav-btn.large');
+    const darkModeToggle = document.getElementById('dark-mode-toggle');
+
+    // State
+    let favorites = new Set(JSON.parse(localStorage.getItem('favorites') || '[]'));
+    let filteredBooks = [...books];
+    let currentModalBookId = null;
+
+    function saveFavorites() {
+      localStorage.setItem('favorites', JSON.stringify([...favorites]));
+    }
+
+    // Helpers
+
+    // Create a book card DOM node
+    function createBookCard(book) {
+      const card = document.createElement('div');
+      card.className = 'book-card';
+      card.setAttribute('tabindex', '0');
+      card.setAttribute('role', 'button');
+      card.setAttribute('aria-pressed', favorites.has(book.id) ? 'true' : 'false');
+      card.setAttribute('aria-label', `View details for ${book.title} by ${book.author}`);
+
+      const img = document.createElement('img');
+      img.src = book.cover;
+      img.alt = `Cover of ${book.title}`;
+
+      const h2 = document.createElement('h2');
+      h2.textContent = book.title;
+
+      const author = document.createElement('p');
+      author.className = 'author';
+      author.textContent = `by ${book.author}`;
+
+      const favBtn = document.createElement('button');
+      favBtn.className = 'fav-btn';
+      favBtn.innerHTML = favorites.has(book.id) ? '★' : '☆';
+      favBtn.title = favorites.has(book.id) ? 'Remove from favorites' : 'Add to favorites';
+      favBtn.setAttribute('aria-label', favBtn.title);
+      favBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        toggleFavorite(book.id, favBtn, card);
+      });
+
+      if (favorites.has(book.id)) {
+        card.classList.add('fav');
+      }
+
+      card.appendChild(img);
+      card.appendChild(h2);
+      card.appendChild(author);
+      card.appendChild(favBtn);
+
+      // Click / keyboard enter opens modal
+      card.addEventListener('click', () => openModal(book.id));
+      card.addEventListener('keydown', e => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          openModal(book.id);
+        }
+      });
+
+      return card;
+    }
+
+    function toggleFavorite(bookId, btn, card) {
+      if (favorites.has(bookId)) {
+        favorites.delete(bookId);
+        btn.innerHTML = '☆';
+        btn.title = 'Add to favorites';
+        card.classList.remove('fav');
+      } else {
+        favorites.add(bookId);
+        btn.innerHTML = '★';
+        btn.title = 'Remove from favorites';
+        card.classList.add('fav');
+      }
+      btn.setAttribute('aria-label', btn.title);
+      saveFavorites();
+    }
+
+    // Render book cards to grid
+    function renderBooks(bookList) {
+      bookGrid.innerHTML = '';
+      if (bookList.length === 0) {
+        const msg = document.createElement('p');
+        msg.textContent = 'No books found.';
+        msg.style.gridColumn = '1/-1';
+        bookGrid.appendChild(msg);
+        return;
+      }
+      bookList.forEach(book => {
+        bookGrid.appendChild(createBookCard(book));
+      });
+    }
+
+    // Filter books based on search input
+    function filterBooks(query) {
+      const q = query.trim().toLowerCase();
+      filteredBooks = books.filter(book =>
+        book.title.toLowerCase().includes(q) || book.author.toLowerCase().includes(q)
+      );
+      renderBooks(filteredBooks);
+    }
+
+    // Open modal with book details
+    function openModal(bookId) {
+      const book = books.find(b => b.id === bookId);
+      if (!book) return;
+
+      currentModalBookId = bookId;
+      modalTitle.textContent = book.title;
+      modalAuthor.textContent = `by ${book.author}`;
+      modalDescription.textContent = book.description;
+      modalCover.src = book.cover;
+      modalCover.alt = `Cover of ${book.title}`;
+
+      // Set favorite btn text & aria-label
+      if (favorites.has(bookId)) {
+        modalFavBtn.textContent = '★ Remove from favorites';
+        modalFavBtn.setAttribute('aria-label', `Remove ${book.title} from favorites`);
+      } else {
+        modalFavBtn.textContent = '☆ Add to favorites';
+        modalFavBtn.setAttribute('aria-label', `Add ${book.title} to favorites`);
+      }
+
+      modal.setAttribute('aria-hidden', 'false');
+      modal.hidden = false;
+      modal.focus();
+      document.body.style.overflow = 'hidden';
+    }
+
+    // Close modal
+    function closeModal() {
+      currentModalBookId = null;
+      modal.setAttribute('aria-hidden', 'true');
+      modal.hidden = true;
+      document.body.style.overflow = '';
+    }
+
+    // Toggle favorite from modal
+    modalFavBtn.addEventListener('click', () => {
+      if (currentModalBookId == null) return;
+      const bookId = currentModalBookId;
+      if (favorites.has(bookId)) {
+        favorites.delete(bookId);
+        modalFavBtn.textContent = '☆ Add to favorites';
+        modalFavBtn.setAttribute('aria-label', `Add book to favorites`);
+      } else {
+        favorites.add(bookId);
+        modalFavBtn.textContent = '★ Remove from favorites';
+        modalFavBtn.setAttribute('aria-label', `Remove book from favorites`);
+      }
+      saveFavorites();
+      // Also update the card on page
+      renderBooks(filteredBooks);
+    });
+
+    modalCloseBtn.addEventListener('click', closeModal);
+    modal.addEventListener('click', e => {
+      if (e.target === modal) closeModal();
+    });
+
+    // Keyboard navigation for modal
+    document.addEventListener('keydown', e => {
+      if (!modal.hidden && e.key === 'Escape') {
+        closeModal();
+      }
+    });
+
+    // Dark mode toggle
+    function setDarkMode(on) {
+      if (on) {
+        document.body.classList.add('dark');
+        darkModeToggle.textContent = 'Light Mode';
+        darkModeToggle.setAttribute('aria-pressed', 'true');
+        localStorage.setItem('darkMode', 'true');
+      } else {
+        document.body.classList.remove('dark');
+        darkModeToggle.textContent = 'Dark Mode';
+        darkModeToggle.setAttribute('aria-pressed', 'false');
+        localStorage.setItem('darkMode', 'false');
+      }
+    }
+    darkModeToggle.addEventListener('click', () => {
+      setDarkMode(!document.body.classList.contains('dark'));
+    });
+    // Initialize dark mode from localStorage
+    setDarkMode(localStorage.getItem('darkMode') === 'true');
+
+    // Search input listener
+    searchInput.addEventListener('input', e => {
+      filterBooks(e.target.value);
+    });
+
+    // Initial render
+    renderBooks(books);
+  })();
+</script>
 </body>
 </html>
